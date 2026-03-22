@@ -1,101 +1,152 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState, useEffect, useMemo } from "react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { BN, Program, AnchorProvider } from "@coral-xyz/anchor";
+import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { IDL, CrowdPass, parseCampaignState, parseCrowdPassError } from "../lib/idl";
+
+const PROGRAM_ID = new PublicKey(
+  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "4RfgHgQRwssnJuzShFwmZVEw7DjNJj5TFPLjFJWJ8MT"
+);
+
+export default function Dashboard() {
+  const { publicKey, signTransaction, connected } = useWallet();
+  const { connection } = useConnection();
+
+  const [form, setForm] = useState({
+    eventId: "",
+    title: "",
+    description: "",
+    mode: "ticket" as "ticket" | "donation",
+    ticketPrice: "0.1",
+    fundingGoal: "1",
+    maxTickets: "100",
+  });
+
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [txStatus, setTxStatus] = useState<"idle" | "building" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [lastBlink, setLastBlink] = useState("");
+
+  const program = useMemo(() => {
+    if (!publicKey || !signTransaction) return null;
+    const provider = new AnchorProvider(connection, {
+      publicKey,
+      signTransaction,
+      signAllTransactions: async (txs) => Promise.all(txs.map(t => signTransaction(t))),
+    }, { commitment: "confirmed" });
+    return new Program<CrowdPass>(IDL, provider);
+  }, [connection, publicKey, signTransaction]);
+
+  const fetchMyCampaigns = async () => {
+    if (!program || !publicKey) return;
+    setLoading(true);
+    try {
+      const accounts = await (program.account as any).campaignState.all([
+        { memcmp: { offset: 8, bytes: publicKey.toBase58() } }
+      ]);
+      setCampaigns(accounts.map((acc: any) => parseCampaignState(acc.account as any)));
+    } catch (err) {
+      console.error("Error cargando campañas:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (connected) fetchMyCampaigns();
+    else setCampaigns([]);
+  }, [connected, program]);
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!program || !publicKey) return;
+
+    setTxStatus("building");
+    setErrorMsg("");
+
+    try {
+      const [pda] = PublicKey.findProgramAddressSync(
+        [Buffer.from("campaign"), publicKey.toBuffer(), Buffer.from(form.eventId)],
+        PROGRAM_ID
+      );
+
+      const existing = await connection.getAccountInfo(pda);
+      if (existing) throw new Error("Ya existe una campaña con ese ID para tu wallet.");
+
+      const price = form.mode === "ticket" ? new BN(parseFloat(form.ticketPrice) * LAMPORTS_PER_SOL) : new BN(0);
+      const goal = new BN(parseFloat(form.fundingGoal) * LAMPORTS_PER_SOL);
+      const max = new BN(parseInt(form.maxTickets));
+
+      const tx = await (program.methods as any)
+        .initializeCampaign(form.eventId, price, goal, max, form.title, form.description)
+        .accounts({ campaign: pda, authority: publicKey, systemProgram: SystemProgram.programId })
+        .rpc();
+
+      const campaignId = `${publicKey.toBase58()}_${form.eventId}`;
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      const blinkUrl = `https://dial.to/?action=solana-action:${encodeURIComponent(origin + "/api/actions/campaign/" + campaignId)}`;
+      
+      setLastBlink(blinkUrl);
+      setTxStatus("success");
+      fetchMyCampaigns();
+    } catch (err) {
+      setErrorMsg(parseCrowdPassError(err));
+      setTxStatus("error");
+    }
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="page-wrap">
+      <header className="header">
+        <div className="logo"><div className="logo-dot" /><span className="logo-text">CrowdPass</span></div>
+        <WalletMultiButton />
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {connected ? (
+        <>
+          <section className="card">
+            <h2 className="card-title">Nueva Campaña</h2>
+            <form onSubmit={handleCreate}>
+              <div className="field">
+                <label>ID Único (URL-friendly)</label>
+                <input 
+                  type="text" required placeholder="ej: mi-evento-2026"
+                  value={form.eventId}
+                  onChange={(e) => setForm({...form, eventId: e.target.value.toLowerCase().replace(/\s/g, "-")})}
+                />
+              </div>
+              <div className="row-2">
+                 <input type="text" placeholder="Título" onChange={(e) => setForm({...form, title: e.target.value})} />
+                 <input type="number" placeholder="Meta (SOL)" onChange={(e) => setForm({...form, fundingGoal: e.target.value})} />
+              </div>
+              <button className="btn-primary" disabled={txStatus === "building"}>
+                {txStatus === "building" ? "Firmando..." : "Crear Blink On-Chain"}
+              </button>
+            </form>
+            {txStatus === "error" && <p className="status error">{errorMsg}</p>}
+          </section>
+
+          <section>
+            <h2 className="card-title">Mis Campañas Activas</h2>
+            {loading ? <p>Consultando Solana...</p> : (
+              <div className="campaign-list">
+                {campaigns.map((c, i) => (
+                  <div key={i} className="card success-card" style={{marginBottom: '10px'}}>
+                    <p><strong>{c.title}</strong> ({c.currentSol} / {c.fundingGoalSol} SOL)</p>
+                    <div className="url-box" style={{fontSize: '10px'}}>{c.eventId}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      ) : (
+        <div className="hero"><h1>Conecta tu wallet para empezar</h1></div>
+      )}
     </div>
   );
 }
