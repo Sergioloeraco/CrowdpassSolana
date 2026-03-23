@@ -39,7 +39,7 @@ export function getProgram(): anchor.Program<CrowdPass> {
     },
     { commitment: "confirmed" }
   );
-  return new anchor.Program<CrowdPass>(IDL, provider);
+  return new anchor.Program<CrowdPass>(IDL, PROGRAM_ID, provider);
 }
 
 // ── Helper: deriva PDA de una campaña ────────────────────────────

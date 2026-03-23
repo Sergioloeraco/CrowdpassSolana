@@ -1,7 +1,10 @@
 import { Idl } from '@coral-xyz/anchor';
 import idlJson from './idl.json';
 
-export const IDL = idlJson as unknown as Idl;
+export const IDL = { 
+  ...idlJson, 
+  address: "4RfgHgQRwssnJuzShFwmZVEw7DjNJj5TFPLjFJWJ8MT1" 
+} as unknown as Idl;
 
 export type CrowdPass = Idl;
 

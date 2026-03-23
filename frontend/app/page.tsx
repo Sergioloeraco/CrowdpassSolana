@@ -2,13 +2,18 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import dynamic from "next/dynamic";
 import { BN, Program, AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { IDL, CrowdPass, parseCampaignState, parseCrowdPassError } from "../lib/idl";
 
+const WalletMultiButton = dynamic(
+  async () => (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
+  { ssr: false }
+);
+
 const PROGRAM_ID = new PublicKey(
-  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "4RfgHgQRwssnJuzShFwmZVEw7DjNJj5TFPLjFJWJ8MT"
+  process.env.NEXT_PUBLIC_PROGRAM_ID ?? "4RfgHgQRwssnJuzShFwmZVEw7DjNJj5TFPLjFJWJ8MT1"
 );
 
 export default function Dashboard() {
@@ -38,7 +43,7 @@ export default function Dashboard() {
       signTransaction,
       signAllTransactions: async (txs) => Promise.all(txs.map(t => signTransaction(t))),
     }, { commitment: "confirmed" });
-    return new Program<CrowdPass>(IDL, provider);
+    return new Program<CrowdPass>(IDL, PROGRAM_ID, provider);
   }, [connection, publicKey, signTransaction]);
 
   const fetchMyCampaigns = async () => {
