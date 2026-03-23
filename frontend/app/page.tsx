@@ -79,6 +79,9 @@ export default function Dashboard() {
         PROGRAM_ID
       );
 
+      console.log("PDA CREADO EN FRONTEND:", pda.toBase58());
+      console.log("Program ID en FRONTEND:", PROGRAM_ID.toBase58());
+
       const existing = await connection.getAccountInfo(pda);
       if (existing) throw new Error("Ya existe una campaña con ese ID para tu wallet.");
 
@@ -117,16 +120,34 @@ export default function Dashboard() {
             <h2 className="card-title">Nueva Campaña</h2>
             <form onSubmit={handleCreate}>
               <div className="field">
-                <label>ID Único (URL-friendly)</label>
+                <label htmlFor="eventId">ID Único (URL-friendly)</label>
                 <input 
+                  id="eventId"
+                  name="eventId"
                   type="text" required placeholder="ej: mi-evento-2026"
                   value={form.eventId}
                   onChange={(e) => setForm({...form, eventId: e.target.value.toLowerCase().replace(/\s/g, "-")})}
                 />
               </div>
               <div className="row-2">
-                 <input type="text" placeholder="Título" onChange={(e) => setForm({...form, title: e.target.value})} />
-                 <input type="number" placeholder="Meta (SOL)" onChange={(e) => setForm({...form, fundingGoal: e.target.value})} />
+                 <input 
+                   id="title" 
+                   name="title" 
+                   aria-label="Título" 
+                   type="text" 
+                   placeholder="Título" 
+                   onChange={(e) => setForm({...form, title: e.target.value})} 
+                 />
+                 <input 
+                   id="fundingGoal" 
+                   name="fundingGoal" 
+                   aria-label="Meta de recaudación en SOL" 
+                   type="number" 
+                   step="any"
+                   min="0"
+                   placeholder="Meta (SOL)" 
+                   onChange={(e) => setForm({...form, fundingGoal: e.target.value})} 
+                 />
               </div>
               <button className="btn-primary" disabled={txStatus === "building"}>
                 {txStatus === "building" ? "Firmando..." : "Crear Blink On-Chain"}
