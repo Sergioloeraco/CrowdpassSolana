@@ -34,3 +34,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CrowdpassSolana custom ignores
+node_modules/
+.next/
+.vercel/
+target/
+.anchor/
+.env
+.env.local
+.env*.local
+.DS_Store

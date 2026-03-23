@@ -1,0 +1,77 @@
+{
+  "name": "CrowdPass — Solana Dev Environment",
+
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "18",
+      "nvmVersion": "0.40.4"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "latest",
+      "profile": "default"
+    }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "serayuzgur.crates",
+        "bradlc.vscode-tailwindcss",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "solana-labs.solana-id",
+        "coral-xyz.anchor",
+        "github.copilot"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "rust-analyzer.check.command": "clippy",
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.tabSize": 2,
+        "files.eol": "\n"
+      }
+    }
+  },
+
+  "forwardPorts": [3000, 8899, 8900],
+
+  "portsAttributes": {
+    "3000": {
+      "label": "CrowdPass Frontend (Next.js)",
+      "onAutoForward": "openBrowser"
+    },
+    "8899": {
+      "label": "Solana RPC (localnet)",
+      "onAutoForward": "silent"
+    },
+    "8900": {
+      "label": "Solana WebSocket",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "remoteEnv": {
+    "NEXT_PUBLIC_RPC_URL": "https://api.devnet.solana.com"
+  },
+
+  "postStartCommand": "export PATH=\"$HOME/.local/share/solana/install/active_release/bin:$PATH\""
+}
