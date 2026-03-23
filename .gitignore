@@ -1,0 +1,28 @@
+# ==================================
+#  Anchor / Solana (Backend)
+# ==================================
+backend/target/
+backend/.anchor/
+backend/test-ledger/
+**/*.rs.bk
+
+# ==================================
+#  Node / Next.js (Frontend & Backend)
+# ==================================
+node_modules/
+.next/
+out/
+build/
+.vercel/
+
+# ==================================
+#  Entorno (Seguridad)
+# ==================================
+.env
+.env*.local
+
+# ==================================
+#  OS / Varios
+# ==================================
+.DS_Store
+Thumbs.db

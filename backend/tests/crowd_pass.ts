@@ -123,7 +123,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
         .signers([organizer])
         .rpc();
 
-      const state = await program.account.campaignState.fetch(ticketCampaignPda);
+      const state = await (program.account as any).campaignState.fetch(ticketCampaignPda);
 
       assert.equal(state.authority.toBase58(), organizer.publicKey.toBase58());
       assert.equal(state.eventId, TICKET_EVENT_ID);
@@ -153,7 +153,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
         .signers([organizer])
         .rpc();
 
-      const state = await program.account.campaignState.fetch(donationCampaignPda);
+      const state = await (program.account as any).campaignState.fetch(donationCampaignPda);
       assert.equal(state.ticketPrice.toNumber(), 0);
       assert.isTrue(state.isActive);
     });
@@ -219,7 +219,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
         .signers([supporter1])
         .rpc();
 
-      const state = await program.account.campaignState.fetch(ticketCampaignPda);
+      const state = await (program.account as any).campaignState.fetch(ticketCampaignPda);
       assert.equal(state.ticketsSold.toNumber(), 1);
       assert.equal(
         state.currentFunding.toNumber(),
@@ -243,7 +243,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
         .signers([supporter1])
         .rpc();
 
-      const state = await program.account.campaignState.fetch(donationCampaignPda);
+      const state = await (program.account as any).campaignState.fetch(donationCampaignPda);
       assert.equal(state.currentFunding.toNumber(), donationAmount);
       assert.equal(state.ticketsSold.toNumber(), 1);
     });
@@ -297,7 +297,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
           .rpc();
       }
 
-      const state = await program.account.campaignState.fetch(ticketCampaignPda);
+      const state = await (program.account as any).campaignState.fetch(ticketCampaignPda);
       assert.equal(state.ticketsSold.toNumber(), MAX_TICKETS);
       assert.isFalse(state.isActive, "Campaña debe estar inactiva al llegar al máximo");
     });
@@ -481,7 +481,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
     });
 
     it("✓ fetch() devuelve todos los campos del PDA correctamente", async () => {
-      const state = await program.account.campaignState.fetch(readPda);
+      const state = await (program.account as any).campaignState.fetch(readPda);
 
       // Campos escalares
       assert.equal(state.eventId, READ_EVENT_ID);
@@ -509,7 +509,7 @@ describe("CrowdPass — Smart Contract Tests", () => {
         .signers([supporter1])
         .rpc();
 
-      const state = await program.account.campaignState.fetch(readPda);
+      const state = await (program.account as any).campaignState.fetch(readPda);
       const progressPct =
         (state.currentFunding.toNumber() / state.fundingGoal.toNumber()) * 100;
 
