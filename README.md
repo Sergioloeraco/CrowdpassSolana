@@ -22,7 +22,8 @@ El flujo de CrowdPass conecta al organizador directamente con el usuario final s
 
 Mockups relacionados:
 
-- [`frontend/public/mockups/mockups-index.html`](frontend/public/mockups/mockups-index.html)
+- [Índice de mockups](https://crowdpass-solana.vercel.app/mockups/mockups-index.html)
+- [Mockup HTML de arquitectura](https://crowdpass-solana.vercel.app/mockups/mockup-01-architecture.html)
 
 ---
 
@@ -36,7 +37,7 @@ El organizador configura el evento desde una interfaz en Next.js donde define no
 
 Mockup HTML:
 
-- [`frontend/public/mockups/mockup-02-dashboard.html`](frontend/public/mockups/mockup-02-dashboard.html)
+- [Ver dashboard interactivo](https://crowdpass-solana.vercel.app/mockups/mockup-02-dashboard.html)
 
 ---
 
@@ -50,22 +51,23 @@ Una vez publicada la campaña, el Blink consulta el estado on-chain, genera meta
 
 Mockup HTML:
 
-- [`frontend/public/mockups/mockup-03-blink-states.html`](frontend/public/mockups/mockup-03-blink-states.html)
+- [Ver estados del Blink](https://crowdpass-solana.vercel.app/mockups/mockup-03-blink-states.html)
 
 ---
 
 ## 🎨 Mockups e Interacción
 
-Si quieres ver los mockups originales en alta resolución:
+Si quieres ver los mockups directamente desde el deploy sin instalar nada:
 
-1. Clona este repositorio.
-2. Abre los archivos de [`frontend/public/mockups/`](frontend/public/mockups/).
+1. Abre el índice público: [https://crowdpass-solana.vercel.app/mockups/mockups-index.html](https://crowdpass-solana.vercel.app/mockups/mockups-index.html)
+2. Navega entre los HTML servidos estáticamente por Next.js.
 
 Archivos principales:
 
-- [`frontend/public/mockups/mockup-02-dashboard.html`](frontend/public/mockups/mockup-02-dashboard.html)
-- [`frontend/public/mockups/mockup-03-blink-states.html`](frontend/public/mockups/mockup-03-blink-states.html)
-- [`frontend/public/mockups/mockups-index.html`](frontend/public/mockups/mockups-index.html)
+- [https://crowdpass-solana.vercel.app/mockups/mockup-01-architecture.html](https://crowdpass-solana.vercel.app/mockups/mockup-01-architecture.html)
+- [https://crowdpass-solana.vercel.app/mockups/mockup-02-dashboard.html](https://crowdpass-solana.vercel.app/mockups/mockup-02-dashboard.html)
+- [https://crowdpass-solana.vercel.app/mockups/mockup-03-blink-states.html](https://crowdpass-solana.vercel.app/mockups/mockup-03-blink-states.html)
+- [https://crowdpass-solana.vercel.app/mockups/mockups-index.html](https://crowdpass-solana.vercel.app/mockups/mockups-index.html)
 
 ---
 
