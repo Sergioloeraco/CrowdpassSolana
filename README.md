@@ -98,7 +98,24 @@ Si usas Linux o Mac, puedes automatizar gran parte del proceso con:
 bash local-setup.sh
 ```
 
-### 2. Levantar el backend
+
+### 2. Despliegue del Backend (Smart Contract)
+
+Puedes compilar y desplegar el contrato de dos maneras: usando **Solana Playground** (la ruta más rápida en la nube) o de forma local.
+
+#### Opción A: Solana Playground (Recomendado ☁️)
+Si no tienes Rust ni Anchor instalados, puedes usar el IDE web oficial de Solana:
+
+1. Entra a [Solana Playground (solpg.io)](https://beta.solpg.io/).
+2. Crea un nuevo proyecto seleccionando el framework **Anchor (Rust)**.
+3. Copia el código de nuestro archivo [`backend/programs/crowd_pass/src/lib.rs`](backend/programs/crowd_pass/src/lib.rs) y pégalo en el archivo `lib.rs` del Playground.
+4. En el panel izquierdo, ve al ícono de **Build & Deploy**.
+5. Conecta o crea una "Playground Wallet" (puedes pedir un Airdrop de Devnet ahí mismo usando el comando `solana airdrop 2` en la terminal inferior).
+6. Haz clic en **Build** y luego en **Deploy**.
+7. ¡Listo! Copia el **Program ID** que se generó y descarga tu archivo IDL.
+
+#### Opción B: Instalación Local 💻
+Si prefieres usar la CLI tradicional:
 
 ```bash
 cd backend
