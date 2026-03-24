@@ -177,6 +177,10 @@ fi
 echo '--- Instalando dependencias del frontend ---'
 cd frontend
 npm install
+if [ ! -f .env.local ] && [ -f .env.example ]; then
+    cp .env.example .env.local
+    echo ".env.local creado desde .env.example"
+fi
 cd ..
 
 echo '--- Instalando dependencias del backend ---'
@@ -210,13 +214,12 @@ echo "     cd backend && anchor deploy"
 echo "     # Copia el Program ID que aparece"
 echo ""
 echo "  3. Actualizar el Program ID en:"
-echo "     → frontend/.env"
-echo "     → backend/programs/crowd_pass/src/lib.rs  (declare_id!)"
-echo "     → backend/Anchor.toml"
+echo "     -> frontend/.env.local"
+echo "     -> backend/programs/crowd_pass/src/lib.rs  (declare_id!)"
+echo "     -> backend/Anchor.toml"
 echo ""
 echo "  4. Correr el frontend:"
 echo "     cd frontend && npm run dev"
 echo ""
-echo "  5. Probar el Blink en:"
-echo "     https://www.blinks.xyz/inspector"
-
+echo "  5. Probar Blinks y vistas desde:"
+echo "     http://localhost:3000"
