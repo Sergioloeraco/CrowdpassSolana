@@ -73,13 +73,14 @@ npm install
 
 Copia `frontend/.env.example` a `frontend/.env.local` y ajusta tu configuración:
 ```env
-NEXT_PUBLIC_PROGRAM_ID=EL_PROGRAM_ID_QUE_TE_DIO_ANCHOR
+# Opcional si vas a usar el Program ID demo que ya viene como fallback en el codigo.
+# NEXT_PUBLIC_PROGRAM_ID=EL_PROGRAM_ID_QUE_TE_DIO_ANCHOR
 NEXT_PUBLIC_RPC_URL=https://api.devnet.solana.com
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Si vas a probar Blinks fuera de localhost (por ejemplo en Codespaces o con un dominio público), cambia `NEXT_PUBLIC_APP_URL` por esa URL pública.
+Si vas a probar Blinks fuera de localhost (por ejemplo en Codespaces o con un dominio público), cambia `NEXT_PUBLIC_BASE_URL` y `NEXT_PUBLIC_APP_URL` por esa URL pública. Si desplegaste tu propio contrato, define también `NEXT_PUBLIC_PROGRAM_ID`.
 
 Por último, arranca la aplicación:
 
