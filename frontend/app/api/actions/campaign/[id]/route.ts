@@ -108,8 +108,11 @@ export async function GET(_req: Request, { params }: RouteParams) {
     const currentSol     = state.currentFunding.toNumber() / LAMPORTS_PER_SOL;
     const progressPct    = Math.min(Math.round((currentSol / goalSol) * 100), 100);
     
-    // 🔥 FORZAR URL PÚBLICA EN LUGAR DE LOCALHOST PARA DIALECT
-    const baseUrl        = process.env.NEXT_PUBLIC_APP_URL || "https://explanation-mutual-copied-administration.trycloudflare.com";
+    // Obtener la URL base desde el request (soporta Vercel, Render o Localhost dinámicamente)
+    // Usamos x-forwarded-host si está detrás de un proxy (como Vercel o Cloudflare), sino usamos host
+    const protocol = _req.headers.get("x-forwarded-proto") || "https";
+    const host = _req.headers.get("x-forwarded-host") || _req.headers.get("host");
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (host ? `${protocol}://${host}` : "http://localhost:3000");
 
     // ── Construir botones según modo y estado ───────────────────
     const actions = buildActions(
@@ -146,8 +149,10 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
   } catch (err) {
     console.error("[CrowdPass GET]", err);
-    // 🔥 FORZAR URL PÚBLICA EN FALLBACK TAMBIÉN
-    const fallbackBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://explanation-mutual-copied-administration.trycloudflare.com";
+    // Obtener la URL base dinámicamente para el caso de error
+    const protocol = _req.headers.get("x-forwarded-proto") || "https";
+    const host = _req.headers.get("x-forwarded-host") || _req.headers.get("host");
+    const fallbackBaseUrl = process.env.NEXT_PUBLIC_APP_URL || (host ? `${protocol}://${host}` : "http://localhost:3000");
     return NextResponse.json(
       {
         type:        "action",
