@@ -221,7 +221,7 @@ export default function Dashboard() {
 
       setLoadingCampaigns(true);
       await (program.methods as any)
-        .closeCampaign(eventId)
+        .closeCampaign()
         .accounts({
           campaign:  pda,
           authority: publicKey,
