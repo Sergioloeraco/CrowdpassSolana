@@ -159,4 +159,4 @@ Toda aportación es bienvenida. Si encuentras un bug o una mejora, abre un issue
 
 ---
 
-Hecho para el ecosistema global de constructores y hackers de Solana.
+- Proyecto desarrollado para el **Solana LATAM Hackathon 2026**.
