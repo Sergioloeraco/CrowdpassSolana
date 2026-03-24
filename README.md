@@ -20,6 +20,10 @@ El flujo de CrowdPass conecta al organizador directamente con el usuario final s
   <img src="assets/mockup-01-architecture.png" width="900" alt="Arquitectura de CrowdPass">
 </p>
 
+Mockups relacionados:
+
+- [`frontend/public/mockups/mockups-index.html`](frontend/public/mockups/mockups-index.html)
+
 ---
 
 ## 🖥️ Dashboard del Organizador
@@ -30,6 +34,10 @@ El organizador configura el evento desde una interfaz en Next.js donde define no
   <img src="assets/crowdpass_dashboard_preview.png" width="900" alt="Dashboard de CrowdPass">
 </p>
 
+Mockup HTML:
+
+- [`frontend/public/mockups/mockup-02-dashboard.html`](frontend/public/mockups/mockup-02-dashboard.html)
+
 ---
 
 ## 🐦 Flujo del Blink en X
@@ -39,6 +47,10 @@ Una vez publicada la campaña, el Blink consulta el estado on-chain, genera meta
 <p align="center">
   <img src="assets/mockup1.1.png" width="900" alt="Flujo del Blink y pago on-chain">
 </p>
+
+Mockup HTML:
+
+- [`frontend/public/mockups/mockup-03-blink-states.html`](frontend/public/mockups/mockup-03-blink-states.html)
 
 ---
 
