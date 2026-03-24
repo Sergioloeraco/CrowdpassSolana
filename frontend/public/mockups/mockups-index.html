@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrowdPass — Mockups</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#070510;color:#fff;font-family:'DM Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:48px}
+  h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1px;text-align:center}
+  h1 span{background:linear-gradient(90deg,#9945FF,#14F195);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);text-align:center;margin-top:8px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;width:100%;max-width:780px}
+  .card{border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:28px 24px;text-decoration:none;color:#fff;transition:all .2s;display:flex;flex-direction:column;gap:12px}
+  .card:hover{background:rgba(153,69,255,.08);border-color:rgba(153,69,255,.35);transform:translateY(-2px);box-shadow:0 12px 40px rgba(153,69,255,.15)}
+  .card-num{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(153,69,255,.6)}
+  .card-icon{font-size:28px}
+  .card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:16px;letter-spacing:-.3px;line-height:1.2}
+  .card-desc{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5}
+  .card-link{font-size:10px;color:rgba(153,69,255,.6);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+  .footer{font-size:9px;color:rgba(255,255,255,.12);letter-spacing:2px;text-transform:uppercase;text-align:center}
+</style>
+</head>
+<body>
+<div style="text-align:center">
+  <h1>CrowdPass — <span>Mockups</span></h1>
+  <p class="sub">Hackathon Solana LATAM 2026 &nbsp;·&nbsp; 3 archivos de diseño</p>
+</div>
+<div class="grid">
+  <a href="mockup-01-architecture.html" class="card">
+    <div class="card-num">Mockup 01</div>
+    <div class="card-icon">⛓️</div>
+    <div class="card-title">Arquitectura del sistema</div>
+    <div class="card-desc">Flujo completo de datos: organizador → dashboard → PDA → Blink → usuario final.</div>
+    <div class="card-link">Ver mockup →</div>
+  </a>
+  <a href="mockup-02-dashboard.html" class="card">
+    <div class="card-num">Mockup 02</div>
+    <div class="card-icon">🖥️</div>
+    <div class="card-title">Dashboard UI</div>
+    <div class="card-desc">Panel del organizador: formulario + live preview + modal de éxito con Twitter Intent.</div>
+    <div class="card-link">Ver mockup →</div>
+  </a>
+  <a href="mockup-03-blink-states.html" class="card">
+    <div class="card-num">Mockup 03</div>
+    <div class="card-icon">🎟️</div>
+    <div class="card-title">Estados del Blink</div>
+    <div class="card-desc">Tarjeta en X: Activo (ticket), Sold Out / Meta cumplida, y Donación libre.</div>
+    <div class="card-link">Ver mockup →</div>
+  </a>
+</div>
+<div class="footer">CrowdPass · Solana Actions &amp; Blinks · Devnet</div>
+</body>
+</html>

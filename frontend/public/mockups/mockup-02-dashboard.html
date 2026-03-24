@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrowdPass — Dashboard UI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0A0815;color:#fff;font-family:'Syne',sans-serif;min-height:100vh;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:48px}
+  .page-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);text-align:center}
+
+  /* ── BROWSER CHROME ────────────────────────────────── */
+  .browser{width:100%;max-width:1040px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 32px 80px rgba(0,0,0,.6)}
+  .browser-bar{background:#1a1526;padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .dots{display:flex;gap:6px}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .url-bar{flex:1;background:rgba(255,255,255,.06);border-radius:6px;padding:5px 12px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35);margin:0 16px}
+
+  /* ── APP ───────────────────────────────────────────── */
+  .app{background:#08060F;display:flex;flex-direction:column}
+
+  /* header */
+  .app-header{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;border-bottom:1px solid rgba(255,255,255,.05);background:#0B0916}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#9945FF,#14F195);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;position:relative;flex-shrink:0}
+  .logo-mark::after{content:'';position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#14F195;box-shadow:0 0 6px #14F195}
+  .logo-name{font-weight:800;font-size:16px;letter-spacing:-.3px}
+  .logo-net{font-family:'DM Mono',monospace;font-size:9px;color:#9945FF;letter-spacing:3px;margin-left:6px}
+  .wallet-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:10px;border:1px solid rgba(153,69,255,.3);background:rgba(153,69,255,.1);color:#c4a0ff;font-size:12px;font-weight:700;font-family:'DM Mono',monospace}
+  .w-dot{width:7px;height:7px;border-radius:50%;background:rgba(153,69,255,.8)}
+
+  /* main split */
+  .app-main{display:grid;grid-template-columns:1.1fr 1fr;min-height:580px}
+  .col-form{padding:32px 28px;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+  .col-preview{background:#070510;padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:16px}
+
+  /* form */
+  .eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#9945FF}
+  .form-title{font-weight:800;font-size:26px;letter-spacing:-1px;line-height:1.05;margin-top:4px}
+  .form-title span{background:linear-gradient(90deg,#9945FF,#14F195);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .form-sub{font-size:12px;color:rgba(255,255,255,.35);line-height:1.5;margin-top:4px}
+
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3)}
+  .fake-input{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;color:rgba(255,255,255,.55);font-size:13px;position:relative;display:flex;align-items:center;justify-content:space-between}
+  .fake-input.filled{color:#fff;border-color:rgba(255,255,255,.15)}
+  .fake-input.focused{border-color:rgba(153,69,255,.6);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(153,69,255,.12)}
+  .input-suffix{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.25)}
+  .fake-textarea{min-height:52px;align-items:flex-start;padding-top:10px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:12px}
+  .toggle-info .tl{font-size:13px;font-weight:700}
+  .toggle-info .ts{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+  .toggle{width:40px;height:22px;border-radius:11px;background:#9945FF;position:relative;flex-shrink:0}
+  .toggle-nub{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:3px;right:3px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+  .warn{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:10px;font-size:11px;color:rgba(252,196,100,.65);line-height:1.5;font-family:'DM Mono',monospace}
+
+  .btn-main{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,#9945FF,#7B2FBE);color:#fff;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;text-align:center;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:8px}
+
+  /* preview col */
+  .preview-eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.18)}
+  .blink-card{width:100%;max-width:300px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .blink-img{background:linear-gradient(135deg,#0F0B1E,#1a0533);padding:16px;height:148px;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+  .blink-brand{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#9945FF}
+  .blink-title{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;line-height:1.2}
+  .blink-progress{margin-top:6px}
+  .prog-track{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+  .prog-bar{height:100%;width:32%;border-radius:2px;background:linear-gradient(90deg,#9945FF,#14F195)}
+  .prog-labels{display:flex;justify-content:space-between;margin-top:4px}
+  .prog-labels span{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.35)}
+  .live-dot{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px}
+  .live-dot .d{width:6px;height:6px;border-radius:50%;background:#14F195;box-shadow:0 0 6px #14F195}
+  .live-dot span{font-family:'DM Mono',monospace;font-size:9px;color:#14F195}
+  .blink-meta{background:#150D2E;padding:9px 12px;border-top:1px solid rgba(255,255,255,.05)}
+  .blink-meta-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.4;margin-bottom:3px}
+  .blink-meta-url{font-family:'DM Mono',monospace;font-size:9px;color:rgba(153,69,255,.5)}
+  .blink-btns{background:#0F0922;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+  .blink-btn-p{padding:9px;border-radius:9px;border:1px solid rgba(153,69,255,.35);background:rgba(153,69,255,.12);color:#c4a0ff;font-size:11px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
+  .blink-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .blink-btn-s{padding:8px;border-radius:9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);font-size:11px;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px}
+
+  .annotation{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);line-height:1.5;text-align:center;max-width:280px}
+
+  /* ── MODAL ─────────────────────────────────────────── */
+  .modal-screen{width:100%;max-width:1040px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);background:#08060F;box-shadow:0 32px 80px rgba(0,0,0,.6)}
+  .modal-overlay{background:rgba(0,0,0,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:60px 40px;position:relative}
+  .blurred-bg{position:absolute;inset:0;background:#08060F;opacity:.7}
+  .modal-box{background:#0C0920;border:1px solid rgba(20,241,149,.2);border-radius:20px;padding:32px;width:380px;position:relative;z-index:1;box-shadow:0 0 60px rgba(20,241,149,.1)}
+  .modal-stripe{height:3px;background:linear-gradient(90deg,#9945FF,#14F195);border-radius:2px;margin-bottom:22px}
+  .modal-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(20,241,149,.1);border:1px solid rgba(20,241,149,.25);border-radius:99px;padding:4px 12px;margin-bottom:14px;font-family:'DM Mono',monospace;font-size:9px;color:#14F195;letter-spacing:2px;text-transform:uppercase}
+  .modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff;margin-bottom:6px}
+  .modal-sub{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;margin-bottom:20px}
+  .modal-sub strong{color:#fff;font-weight:700}
+  .url-field-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .url-box{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.35);line-height:1.5;word-break:break-all;margin-bottom:14px}
+  .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .btn-copy{padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-size:12px;font-weight:700;text-align:center;font-family:'Syne',sans-serif}
+  .btn-tweet{padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#000;color:#fff;font-size:12px;font-weight:700;text-align:center;font-family:'Syne',sans-serif}
+  .btn-reset{text-align:center;font-size:11px;color:rgba(255,255,255,.2);font-family:'DM Mono',monospace}
+</style>
+</head>
+<body>
+
+<p class="page-label">Mockup 2 / 3 &nbsp;·&nbsp; Dashboard del Organizador</p>
+
+<!-- STATE 1: FORM -->
+<div>
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);text-align:center;margin-bottom:12px">Estado A — Formulario</p>
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="dots">
+        <div class="dot" style="background:#FF5F57"></div>
+        <div class="dot" style="background:#FFBD2E"></div>
+        <div class="dot" style="background:#28C940"></div>
+      </div>
+      <div class="url-bar">https://crowdpass.vercel.app</div>
+    </div>
+    <div class="app">
+      <div class="app-header">
+        <div class="logo">
+          <div class="logo-mark">C</div>
+          <span class="logo-name">CrowdPass</span>
+          <span class="logo-net">DEVNET</span>
+        </div>
+        <div class="wallet-btn"><div class="w-dot"></div> Conectar Wallet</div>
+      </div>
+      <div class="app-main">
+        <!-- Form col -->
+        <div class="col-form">
+          <div>
+            <div class="eyebrow">Paso 1 de 1</div>
+            <div class="form-title">Crea tu campaña<br><span>on-chain</span></div>
+            <div class="form-sub">Tu audiencia compra directo desde X sin salir del feed.</div>
+          </div>
+          <div class="field">
+            <label>Nombre del evento *</label>
+            <div class="fake-input filled">Hackathon Meetup Guadalajara 2026</div>
+          </div>
+          <div class="field">
+            <label>Descripción</label>
+            <div class="fake-input fake-textarea filled">El mejor evento de Web3 en LATAM. Construye el futuro con Solana.</div>
+          </div>
+          <div class="field">
+            <label>Meta de recaudación (SOL) *</label>
+            <div class="fake-input focused filled">10 <span class="input-suffix">SOL</span></div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="tl">¿Vender boletos?</div>
+              <div class="ts">Precio fijo por entrada — monto exacto</div>
+            </div>
+            <div class="toggle"><div class="toggle-nub"></div></div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label>Precio por boleto (SOL) *</label>
+              <div class="fake-input filled">0.1 <span class="input-suffix">SOL</span></div>
+            </div>
+            <div class="field">
+              <label>Capacidad máxima *</label>
+              <div class="fake-input filled">200 <span class="input-suffix">seats</span></div>
+            </div>
+          </div>
+          <div class="warn">⚠&nbsp; Conecta tu wallet antes de crear. El organizador paga el Rent del PDA (~0.003 SOL).</div>
+          <div class="btn-main"><span>⚡</span> Crear Evento en Solana</div>
+        </div>
+        <!-- Preview col -->
+        <div class="col-preview">
+          <div class="preview-eyebrow">Preview del Blink en X</div>
+          <div class="blink-card">
+            <div class="blink-img">
+              <div class="blink-brand">CrowdPass</div>
+              <div>
+                <div class="blink-title">Hackathon Meetup Guadalajara 2026</div>
+                <div class="blink-progress">
+                  <div class="prog-track"><div class="prog-bar"></div></div>
+                  <div class="prog-labels"><span>32% recaudado</span><span>Meta: 10 SOL</span></div>
+                </div>
+              </div>
+              <div class="live-dot"><div class="d"></div><span>Activo</span></div>
+            </div>
+            <div class="blink-meta">
+              <div class="blink-meta-desc">El mejor evento de Web3 en LATAM. Construye el futuro con Solana.</div>
+              <div class="blink-meta-url">crowdpass.vercel.app</div>
+            </div>
+            <div class="blink-btns">
+              <div class="blink-btn-p"><span>🎟️</span> Comprar Boleto — 0.1 SOL</div>
+              <div class="blink-btn-row">
+                <div class="blink-btn-s"><span>☕</span> Donar 0.1</div>
+                <div class="blink-btn-s"><span>🔥</span> Donar 0.5</div>
+              </div>
+            </div>
+          </div>
+          <div class="annotation">Así se verá tu Blink en X. Los usuarios interactúan desde su feed sin salir de la plataforma.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATE 2: MODAL SUCCESS -->
+<div style="width:100%;max-width:1040px">
+  <p style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);text-align:center;margin-bottom:12px">Estado B — Modal de éxito</p>
+  <div class="modal-screen">
+    <div class="browser-bar" style="background:#1a1526">
+      <div class="dots">
+        <div class="dot" style="background:#FF5F57"></div>
+        <div class="dot" style="background:#FFBD2E"></div>
+        <div class="dot" style="background:#28C940"></div>
+      </div>
+      <div class="url-bar">https://crowdpass.vercel.app</div>
+    </div>
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-stripe"></div>
+        <div class="modal-badge"><span style="font-size:7px">●</span>&nbsp; Confirmado en Devnet</div>
+        <div class="modal-title">¡Campaña creada! 🚀</div>
+        <div class="modal-sub">Tu evento <strong>"Hackathon Meetup Guadalajara 2026"</strong> ya vive on-chain en Solana. Comparte el Blink y tus seguidores podrán comprar su boleto desde X.</div>
+        <div class="url-field-label">Tu Blink URL</div>
+        <div class="url-box">https://dial.to/?action=solana-action:https%3A%2F%2Fcrowdpass.vercel.app%2Fapi%2Factions%2Fcampaign%2F8x4F...kLm_hackathon-gdl-2026</div>
+        <div class="modal-btns">
+          <div class="btn-copy">📋 Copiar link</div>
+          <div class="btn-tweet">𝕏 Publicar en X</div>
+        </div>
+        <div class="btn-reset">Crear otra campaña →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:9px;color:rgba(255,255,255,.12);letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace">CrowdPass · Hackathon Solana LATAM 2026 · Mockup 2/3</p>
+</body>
+</html>

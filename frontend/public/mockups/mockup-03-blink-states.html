@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrowdPass — Estados del Blink</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#070510;color:#fff;font-family:'DM Mono',monospace;min-height:100vh;padding:48px 24px;display:flex;flex-direction:column;align-items:center;gap:64px}
+  h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-1px;text-align:center}
+  h1 span{background:linear-gradient(90deg,#9945FF,#14F195);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .page-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.25);text-align:center;margin-top:6px}
+
+  /* grid de estados */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;width:100%;max-width:900px}
+
+  .state-col{display:flex;flex-direction:column;gap:12px}
+  .state-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+  .state-label::before,.state-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
+  .state-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:8px;letter-spacing:1px;text-transform:uppercase;align-self:center;margin-bottom:2px}
+
+  /* blink card */
+  .card{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1);box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .card-img{padding:18px;height:158px;display:flex;flex-direction:column;justify-content:space-between;position:relative}
+  .card-img.active{background:linear-gradient(135deg,#0F0B1E,#1a0533)}
+  .card-img.sold{background:linear-gradient(135deg,#0F0B1E,#1a0533);filter:saturate(.4)}
+  .card-img.donation{background:linear-gradient(135deg,#0B1020,#0a1530)}
+
+  .brand{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#9945FF}
+  .brand.donation-mode{color:#3B8BD4}
+  .card-title{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;line-height:1.2}
+  .prog-track{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:8px}
+  .prog-bar{height:100%;border-radius:2px}
+  .prog-bar.active{width:67%;background:linear-gradient(90deg,#9945FF,#14F195)}
+  .prog-bar.sold{width:100%;background:linear-gradient(90deg,#9945FF,#14F195)}
+  .prog-bar.donation{width:45%;background:linear-gradient(90deg,#185FA5,#1D9E75)}
+  .prog-labels{display:flex;justify-content:space-between;margin-top:4px}
+  .prog-labels span{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.35)}
+  .status-dot{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:4px}
+  .status-dot .d{width:6px;height:6px;border-radius:50%}
+  .status-dot .d.green{background:#14F195;box-shadow:0 0 6px #14F195}
+  .status-dot .d.purple{background:#9945FF}
+  .status-dot .d.blue{background:#378ADD}
+  .status-dot span{font-family:'DM Mono',monospace;font-size:8px}
+  .status-dot span.green{color:#14F195}
+  .status-dot span.purple{color:#9945FF}
+  .status-dot span.blue{color:#378ADD}
+
+  /* sold out overlay */
+  .sold-overlay{position:absolute;inset:0;background:rgba(8,6,15,.65);display:flex;align-items:center;justify-content:center}
+  .sold-badge-big{padding:10px 22px;border:2px solid rgba(153,69,255,.65);border-radius:8px;font-family:'DM Mono',monospace;font-size:14px;letter-spacing:5px;color:#9945FF;text-transform:uppercase;background:rgba(153,69,255,.1)}
+
+  /* meta area */
+  .card-meta{padding:10px 14px;border-top:1px solid rgba(255,255,255,.05)}
+  .card-meta.dark{background:#150D2E}
+  .card-meta.darker{background:#0F1525}
+  .meta-desc{font-size:11px;color:rgba(255,255,255,.45);line-height:1.4;margin-bottom:3px}
+  .meta-url{font-family:'DM Mono',monospace;font-size:9px}
+  .meta-url.purple{color:rgba(153,69,255,.5)}
+  .meta-url.blue{color:rgba(56,153,255,.4)}
+
+  /* buttons area */
+  .card-btns{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+  .card-btns.dark{background:#0F0922}
+  .card-btns.darker{background:#0A0F1E}
+  .btn-p{padding:10px;border-radius:9px;font-size:11px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;font-family:'Syne',sans-serif}
+  .btn-p.purple{border:1px solid rgba(153,69,255,.35);background:rgba(153,69,255,.12);color:#c4a0ff}
+  .btn-p.blue{border:1px solid rgba(56,153,255,.3);background:rgba(56,153,255,.1);color:#80c4ff}
+  .btn-p.external{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:rgba(255,255,255,.6)}
+  .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .btn-s{padding:8px;border-radius:9px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);font-size:11px;font-weight:600;text-align:center;display:flex;align-items:center;justify-content:center;gap:4px;font-family:'Syne',sans-serif}
+  .btn-s.blue{border-color:rgba(56,153,255,.2);background:rgba(56,153,255,.06);color:rgba(128,196,255,.6)}
+  .btn-caption{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);text-align:center}
+
+  /* annotations */
+  .note{font-size:10px;color:rgba(255,255,255,.2);line-height:1.6;text-align:center;max-width:280px;align-self:center}
+  .note strong{color:rgba(255,255,255,.45)}
+
+  /* comparison table */
+  .comparison{width:100%;max-width:900px;border-radius:14px;border:1px solid rgba(255,255,255,.07);overflow:hidden}
+  .cmp-header{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;background:rgba(255,255,255,.03);padding:10px 20px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3)}
+  .cmp-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;padding:11px 20px;border-top:1px solid rgba(255,255,255,.05);font-size:12px;align-items:center}
+  .cmp-row:nth-child(even){background:rgba(255,255,255,.02)}
+  .cmp-key{color:rgba(255,255,255,.5)}
+  .yes{color:#14F195}
+  .no{color:rgba(255,255,255,.2)}
+  .partial{color:#9945FF}
+</style>
+</head>
+<body>
+
+<div style="text-align:center">
+  <h1>Blink — <span>Estados de la tarjeta</span></h1>
+  <p class="page-sub">Mockup 3 / 3 &nbsp;·&nbsp; UI del Blink en X (Twitter)</p>
+</div>
+
+<!-- CARDS GRID -->
+<div class="grid">
+
+  <!-- ESTADO A: ACTIVO (TICKET) -->
+  <div class="state-col">
+    <div class="state-label">Estado A — Activo (ticket)</div>
+    <div class="state-badge" style="background:rgba(20,241,149,.1);border:1px solid rgba(20,241,149,.25);color:#14F195">● Campaña activa</div>
+    <div class="card">
+      <div class="card-img active">
+        <div class="brand">CrowdPass</div>
+        <div>
+          <div class="card-title">Hackathon Meetup GDL 2026</div>
+          <div class="prog-track"><div class="prog-bar active"></div></div>
+          <div class="prog-labels"><span>67% recaudado</span><span>Meta: 10 SOL</span></div>
+        </div>
+        <div class="status-dot"><div class="d green"></div><span class="green">Activo</span></div>
+      </div>
+      <div class="card-meta dark">
+        <div class="meta-desc">El mejor evento Web3 de LATAM. ¡Tu boleto te espera!</div>
+        <div class="meta-url purple">crowdpass.vercel.app</div>
+      </div>
+      <div class="card-btns dark">
+        <div class="btn-p purple"><span>🎟️</span> Comprar Boleto — 0.1 SOL</div>
+        <div class="btn-row">
+          <div class="btn-s"><span>☕</span> Donar 0.1 SOL</div>
+          <div class="btn-s"><span>🔥</span> Donar 0.5 SOL</div>
+        </div>
+        <div class="btn-caption">134 / 200 boletos disponibles</div>
+      </div>
+    </div>
+    <div class="note">Campaña activa con boletos restantes. Muestra precio fijo, barra de progreso y botones de pago habilitados.</div>
+  </div>
+
+  <!-- ESTADO B: SOLD OUT / META CUMPLIDA -->
+  <div class="state-col">
+    <div class="state-label">Estado B — Sold out / Meta</div>
+    <div class="state-badge" style="background:rgba(153,69,255,.1);border:1px solid rgba(153,69,255,.3);color:#9945FF">● Campaña cerrada</div>
+    <div class="card">
+      <div class="card-img sold" style="position:relative">
+        <div class="brand" style="opacity:.5">CrowdPass</div>
+        <div>
+          <div class="card-title" style="opacity:.5">Hackathon Meetup GDL 2026</div>
+          <div class="prog-track"><div class="prog-bar sold"></div></div>
+          <div class="prog-labels"><span>100% recaudado</span><span>Meta: 10 SOL ✓</span></div>
+        </div>
+        <div class="status-dot"><div class="d purple"></div><span class="purple">Cerrado</span></div>
+        <div class="sold-overlay"><div class="sold-badge-big">SOLD OUT</div></div>
+      </div>
+      <div class="card-meta dark">
+        <div class="meta-desc" style="opacity:.5">El mejor evento Web3 de LATAM. ¡Tu boleto te espera!</div>
+        <div class="meta-url purple" style="opacity:.5">crowdpass.vercel.app</div>
+      </div>
+      <div class="card-btns dark">
+        <div class="btn-p external"><span>🔗</span> Ver detalles del evento</div>
+        <div class="btn-caption" style="color:rgba(153,69,255,.4)">200 / 200 boletos vendidos</div>
+      </div>
+    </div>
+    <div class="note">Campaña completada. Overlay "SOLD OUT", botones de pago deshabilitados. Solo queda el link a detalles externos.</div>
+  </div>
+
+  <!-- ESTADO C: DONACIÓN LIBRE -->
+  <div class="state-col">
+    <div class="state-label">Estado C — Donación libre</div>
+    <div class="state-badge" style="background:rgba(56,153,255,.1);border:1px solid rgba(56,153,255,.25);color:#80c4ff">● Modo donación</div>
+    <div class="card">
+      <div class="card-img donation">
+        <div class="brand donation-mode">CrowdPass</div>
+        <div>
+          <div class="card-title">Causa Comunitaria Solana LATAM</div>
+          <div class="prog-track"><div class="prog-bar donation"></div></div>
+          <div class="prog-labels"><span>45% recaudado</span><span>Meta: 5 SOL</span></div>
+        </div>
+        <div class="status-dot"><div class="d blue"></div><span class="blue">Activo</span></div>
+      </div>
+      <div class="card-meta darker">
+        <div class="meta-desc">Apoya esta causa con lo que puedas. Cada contribución suma.</div>
+        <div class="meta-url blue">crowdpass.vercel.app</div>
+      </div>
+      <div class="card-btns darker">
+        <div class="btn-row">
+          <div class="btn-s blue"><span>☕</span> Donar 0.05</div>
+          <div class="btn-s blue"><span>💙</span> Donar 0.1</div>
+        </div>
+        <div class="btn-row">
+          <div class="btn-s blue"><span>🔥</span> Donar 0.5</div>
+          <div class="btn-s blue"><span>✏️</span> Monto libre</div>
+        </div>
+        <div class="btn-caption">Donación mínima: cualquier monto</div>
+      </div>
+    </div>
+    <div class="note">Modo donación (ticket_price = 0). Sin boletos ni precio fijo. 4 botones con montos sugeridos + campo libre.</div>
+  </div>
+
+</div>
+
+<!-- COMPARISON TABLE -->
+<div style="width:100%;max-width:900px;display:flex;flex-direction:column;gap:12px">
+  <p style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.2);text-align:center">Comparativa de comportamiento por estado</p>
+  <div class="comparison">
+    <div class="cmp-header">
+      <span>Elemento UI</span>
+      <span style="text-align:center">A · Activo</span>
+      <span style="text-align:center">B · Sold Out</span>
+      <span style="text-align:center">C · Donación</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Barra de progreso</span>
+      <span class="yes" style="text-align:center">✓ dinámica</span>
+      <span class="yes" style="text-align:center">✓ 100%</span>
+      <span class="yes" style="text-align:center">✓ dinámica</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Botón "Comprar Boleto"</span>
+      <span class="yes" style="text-align:center">✓ habilitado</span>
+      <span class="no" style="text-align:center">✗ oculto</span>
+      <span class="no" style="text-align:center">✗ N/A</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Botones de donación</span>
+      <span class="partial" style="text-align:center">2 fijos</span>
+      <span class="no" style="text-align:center">✗ ocultos</span>
+      <span class="yes" style="text-align:center">4 + libre</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Overlay "SOLD OUT"</span>
+      <span class="no" style="text-align:center">✗</span>
+      <span class="yes" style="text-align:center">✓</span>
+      <span class="no" style="text-align:center">✗</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Botón "Ver detalles"</span>
+      <span class="no" style="text-align:center">✗</span>
+      <span class="yes" style="text-align:center">✓ externo</span>
+      <span class="no" style="text-align:center">✗</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">POST habilitado en API</span>
+      <span class="yes" style="text-align:center">✓</span>
+      <span class="no" style="text-align:center">✗ 400 error</span>
+      <span class="yes" style="text-align:center">✓</span>
+    </div>
+    <div class="cmp-row">
+      <span class="cmp-key">Dot de estado</span>
+      <span class="yes" style="text-align:center;color:#14F195">verde</span>
+      <span style="text-align:center;color:#9945FF">morado</span>
+      <span style="text-align:center;color:#378ADD">azul</span>
+    </div>
+  </div>
+</div>
+
+<p style="font-size:9px;color:rgba(255,255,255,.12);letter-spacing:2px;text-transform:uppercase">CrowdPass · Hackathon Solana LATAM 2026 · Mockup 3/3</p>
+</body>
+</html>

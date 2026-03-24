@@ -28,7 +28,7 @@ import {
 const HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Encoding, Accept-Encoding",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, Content-Encoding, Accept-Encoding, ngrok-skip-browser-warning",
     "X-Action-Version": "2.1.3",
     "X-Blockchain-Ids": "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1" // Este es el ID de Devnet
 };
@@ -109,7 +109,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
     const progressPct    = Math.min(Math.round((currentSol / goalSol) * 100), 100);
     
     // 🔥 FORZAR URL PÚBLICA EN LUGAR DE LOCALHOST PARA DIALECT
-    const baseUrl        = process.env.NEXT_PUBLIC_APP_URL || "https://ae9192f47afe62.lhr.life";
+    const baseUrl        = process.env.NEXT_PUBLIC_APP_URL || "https://explanation-mutual-copied-administration.trycloudflare.com";
 
     // ── Construir botones según modo y estado ───────────────────
     const actions = buildActions(
@@ -147,7 +147,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
   } catch (err) {
     console.error("[CrowdPass GET]", err);
     // 🔥 FORZAR URL PÚBLICA EN FALLBACK TAMBIÉN
-    const fallbackBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ae9192f47afe62.lhr.life";
+    const fallbackBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://explanation-mutual-copied-administration.trycloudflare.com";
     return NextResponse.json(
       {
         type:        "action",
@@ -300,7 +300,7 @@ export async function POST(req: Request, { params }: RouteParams) {
       : `💜 ¡Gracias por apoyar "${state.title}"! Tu donación fue registrada en Solana.`;
       
     // 🔥 FORZAR URL PÚBLICA PARA EL POST TAMBIÉN  
-    const postBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://ae9192f47afe62.lhr.life";
+    const postBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://crowdpass-sergio.loca.lt";
 
     // ── 10. Retornar POST response (ActionPostResponse) ──────────
     return NextResponse.json(

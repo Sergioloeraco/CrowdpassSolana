@@ -174,9 +174,13 @@ fi
 # 10. DEPENDENCIAS DEL FRONTEND
 # ========================================
 
-echo "--- Instalando dependencias del frontend ---"
-
+echo '--- Instalando dependencias del frontend ---'
 cd frontend
+npm install
+cd ..
+
+echo '--- Instalando dependencias del backend ---'
+cd backend
 npm install
 cd ..
 
@@ -215,3 +219,4 @@ echo "     cd frontend && npm run dev"
 echo ""
 echo "  5. Probar el Blink en:"
 echo "     https://www.blinks.xyz/inspector"
+

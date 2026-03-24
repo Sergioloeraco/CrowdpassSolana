@@ -1,8 +1,8 @@
-Ôªø#!/usr/bin/env bash
+#!/usr/bin/env bash
 set -e
 
 echo "========================================"
-echo "CrowdPass ‚Äî Setup Codespaces"
+echo "CrowdPass ó Setup Codespaces"
 echo "========================================"
 
 # No necesitamos verificar el OS ni instalar dependencias del sistema
@@ -77,7 +77,7 @@ else
 fi
 
 # ========================================
-# 6. CONFIGURACI√ìN DE SOLANA
+# 6. CONFIGURACI”N DE SOLANA
 # ========================================
 
 echo "--- Configurando Solana (devnet) ---"
@@ -97,9 +97,13 @@ fi
 # 7. DEPENDENCIAS DEL FRONTEND
 # ========================================
 
-echo "--- Instalando dependencias del frontend ---"
-
+echo '--- Instalando dependencias del frontend ---'
 cd frontend
+npm install
+cd ..
+
+echo '--- Instalando dependencias del backend ---'
+cd backend
 npm install
 cd ..
 
@@ -110,11 +114,11 @@ cd ..
 echo "--- Build inicial del smart contract ---"
 
 cd backend
-anchor build || echo "anchor build fall√≥ ‚Äî actualiza el Program ID en lib.rs y Anchor.toml"
+anchor build || echo "anchor build fallÛ ó actualiza el Program ID en lib.rs y Anchor.toml"
 cd ..
 
 # ========================================
-# 9. CREAR .env.local AUTOM√ÅTICAMENTE
+# 9. CREAR .env.local AUTOM¡TICAMENTE
 # ========================================
 
 echo "--- Configurando variables de entorno ---"
@@ -122,9 +126,9 @@ echo "--- Configurando variables de entorno ---"
 if [ ! -f frontend/.env.local ]; then
     cp frontend/.env.example frontend/.env.local
 
-    # Detectar la URL del Codespace autom√°ticamente
+    # Detectar la URL del Codespace autom·ticamente
     CODESPACE_URL="https://${CODESPACE_NAME}-3000.app.github.dev"
-    sed -i "s|NEXT_PUBLIC_BASE_URL=.*|NEXT_PUBLIC_BASE_URL=${CODESPACE_URL}|" frontend/.env.local
+    sed -i "s|NEXT_PUBLIC_APP_URL=.*|NEXT_PUBLIC_APP_URL=${CODESPACE_URL}|" frontend/.env.local
 
     echo ".env.local creado con URL del Codespace: ${CODESPACE_URL}"
 else
@@ -137,7 +141,7 @@ echo "========================================"
 echo ""
 echo "Tu wallet Solana: $(solana address)"
 echo ""
-echo "Pr√≥ximos pasos:"
+echo "PrÛximos pasos:"
 echo ""
 echo "  1. Exportar PATH (importante!):"
 echo '     export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"'
@@ -147,13 +151,16 @@ echo "     cd backend && anchor deploy"
 echo "     # Copia el Program ID que aparece"
 echo ""
 echo "  3. Actualizar el Program ID en:"
-echo "     ‚Üí frontend/.env.local"
-echo "     ‚Üí backend/programs/crowd_pass/src/lib.rs  (declare_id!)"
-echo "     ‚Üí backend/Anchor.toml"
+echo "     ? frontend/.env.local"
+echo "     ? backend/programs/crowd_pass/src/lib.rs  (declare_id!)"
+echo "     ? backend/Anchor.toml"
 echo ""
 echo "  4. Correr el frontend:"
 echo "     cd frontend && npm run dev"
-echo "     ‚Üí Puerto 3000 se abre autom√°ticamente"
+echo "     ? Puerto 3000 se abre autom·ticamente"
 echo ""
 echo "  5. Probar el Blink en:"
 echo "     https://www.blinks.xyz/inspector"
+
+
+
